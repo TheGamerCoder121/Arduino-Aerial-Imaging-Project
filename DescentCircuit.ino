@@ -40,6 +40,7 @@ void setup() {
   Serial.begin(9600);        // Start serial communication at 9600 baud
   cameraServo.attach(3);     // Attach servo signal to pin 3
   Serial.println("System ready. Press the button to start setup.");
+  moveServoToAngle(180);
 }
 
 void loop() {
@@ -115,8 +116,7 @@ void landed() {
 }
 
 void takePic() {
-    moveServoToAngle(150); // Move servo to 30 degrees
+    moveServoToAngle(30); // Move servo to 30 degrees
     delay(2000);          // Wait for 2 seconds
-    moveServoToAngle(0); // Move servo to 150 degrees
-    delay(2000);          // Wait for 2 seconds
+    moveServoToAngle(180); // Move servo to 150 degrees
 }
