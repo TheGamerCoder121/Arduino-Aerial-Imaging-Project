@@ -6,6 +6,7 @@
   Code is written for the Arduino Uno.
   Please use responsibly.
 */
+
 // Includes necessary libraries
 #include <HCSR04.h>   // Ultrasonic rangefinder sensor library
 #include <EYW_alt.h>  // Altimeter library
@@ -19,28 +20,30 @@ EYW_alt::Altimeter altimeter;                   // Altimeter object
 // Pin Declarations
 const int speakerPin = 5;
 int ledPin = 4;     // Pin 13 has an LED connected on most Arduino boards. Give it a name:
-int buttonPin = 2;  //use a variable to store the pushbutton pin #
+int buttonPin = 2;  // Use a variable to store the pushbutton pin #
 
 // Variable Declarations
 float currentHeight = 0.0;    // Current height in meters
 bool heightAchieved = false;  // Flag for reaching target altitude
 int distance = 0;             // Distance to object in centimeters
 bool setupDone = false;       // Checks if button is press to start setup
+int picsTaken = 0;            // Number of pictures taken
 
 /*
     digitalWrite(ledPin, LOW); // LED on
-    digitalWrite(ledPin, HIGH); //LED off
+    digitalWrite(ledPin, HIGH); // LED off
 */
 
 void setup() {
   pinMode(buttonPin, INPUT_PULLUP);
   pinMode(ledPin, OUTPUT);
   Serial.begin(9600);        // Start serial communication at 9600 baud
+  cameraServo.attach(3);     // Attach servo signal to pin 3
+  Serial.println("System ready. Press the button to start setup.");
 }
 
 void loop() {
-
-  if (setupDone == false) {
+  if (!setupDone) {
     if (digitalRead(buttonPin) == LOW) { // Check for LOW instead of HIGH
       altimeter.begin();         // Initialize altimeter
       altimeter.calibrate(100);  // Calibrate altimeter to establish ground level
@@ -52,13 +55,11 @@ void loop() {
       noTone(speakerPin);          // Stop tone
       digitalWrite(ledPin, LOW);   // Turn off LED
 
-      cameraServo.attach(3);  // Attach servo signal to pin 3
-      delay(500);             // Delay for 0.5 seconds
       setupDone = true;
     }
-  } else if (setupDone == true) {
+  } else {
     distance = distanceSensor.measureDistanceCm();  // Measure distance
-    currentHeight = altimeter.getHeightAvg(50);     // Average altitude from 50 measurements
+    currentHeight = altimeter.getHeightAvg(30);     // Average altitude from 50 measurements
 
     // Serial output for distance and height
     Serial.print("Current Distance: ");
@@ -66,16 +67,25 @@ void loop() {
     Serial.print("Current Height in meters: ");
     Serial.println(currentHeight);
 
-    if (distance < 3) {
+    if (picsTaken < 3) {
+      takePic();
+      picsTaken++;
+    }
+
+    if (distance < 0) {
       landed();
     }
-    moveServo(30);
+
+
   }
 }
 
-void moveServo(int angle) {
+// Function to move the servo to a specific angle
+void moveServoToAngle(int angle) {
   if (angle >= 0 && angle <= 180) {
     cameraServo.write(angle);
+    Serial.print("Servo moved to angle: ");
+    Serial.println(angle);
   } else {
     Serial.println("Invalid angle. Angle must be between 0 and 180.");
   }
@@ -102,4 +112,11 @@ void landed() {
   flashLED();
   playTone(1047, 300);
   flashLED();
+}
+
+void takePic() {
+    moveServoToAngle(150); // Move servo to 30 degrees
+    delay(2000);          // Wait for 2 seconds
+    moveServoToAngle(0); // Move servo to 150 degrees
+    delay(2000);          // Wait for 2 seconds
 }
