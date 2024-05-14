@@ -59,7 +59,7 @@ void loop() {
     }
   } else {
     distance = distanceSensor.measureDistanceCm();  // Measure distance
-    currentHeight = altimeter.getHeightAvg(30);     // Average altitude from 50 measurements
+    currentHeight = altimeter.getHeightAvg(30);     // Average altitude from 30 measurements
 
     // Serial output for distance and height
     Serial.print("Current Distance: ");
