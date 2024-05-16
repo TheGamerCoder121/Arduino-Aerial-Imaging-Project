@@ -60,20 +60,20 @@ void loop() {
     }
   } else {
     distance = distanceSensor.measureDistanceCm();  // Measure distance
-    currentHeight = altimeter.getHeightAvg(30);     // Average altitude from 30 measurements
+    // currentHeight = altimeter.getHeightAvg(30);     // Average altitude from 30 measurements
 
     // Serial output for distance and height
     Serial.print("Current Distance: ");
     Serial.println(distance);
-    Serial.print("Current Height in meters: ");
-    Serial.println(currentHeight);
+    // Serial.print("Current Height in meters: ");
+    // Serial.println(currentHeight);
 
     if (picsTaken < 3) {
       takePic();
       picsTaken++;
     }
 
-    if (distance < 0) {
+    if (distance < 3) {
       landed();
     }
 
@@ -116,7 +116,7 @@ void landed() {
 }
 
 void takePic() {
-    moveServoToAngle(30); // Move servo to 30 degrees
+    moveServoToAngle(25); // Move servo to 30 degrees
     delay(2000);          // Wait for 2 seconds
     moveServoToAngle(180); // Move servo to 150 degrees
 }
