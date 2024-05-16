@@ -27,7 +27,7 @@ float currentHeight = 0.0;    // Current height in meters
 bool heightAchieved = false;  // Flag for reaching target altitude
 int distance = 0;             // Distance to object in centimeters
 int prevDistance = 0;         // Previous distance to object in centimeters
-const int rapidDecreaseThreshold = 60;  // Threshold for rapid decrease in centimeters
+const int rapidDecreaseThreshold = 50;  // Threshold for rapid decrease in centimeters
 bool setupDone = false;       // Checks if button is press to start setup
 int picsTaken = 0;            // Number of pictures taken
 
