@@ -26,6 +26,8 @@ int buttonPin = 2;  // Use a variable to store the pushbutton pin #
 float currentHeight = 0.0;    // Current height in meters
 bool heightAchieved = false;  // Flag for reaching target altitude
 int distance = 0;             // Distance to object in centimeters
+int prevDistance = 0;         // Previous distance to object in centimeters
+const int rapidDecreaseThreshold = 60;  // Threshold for rapid decrease in centimeters
 bool setupDone = false;       // Checks if button is press to start setup
 int picsTaken = 0;            // Number of pictures taken
 
@@ -60,24 +62,23 @@ void loop() {
     }
   } else {
     distance = distanceSensor.measureDistanceCm();  // Measure distance
-    // currentHeight = altimeter.getHeightAvg(30);     // Average altitude from 30 measurements
 
-    // Serial output for distance and height
+    // Serial output for distance
     Serial.print("Current Distance: ");
     Serial.println(distance);
-    // Serial.print("Current Height in meters: ");
-    // Serial.println(currentHeight);
 
-    if (picsTaken < 3) {
+    // Check for rapid decrease in distance
+    if (prevDistance - distance >= rapidDecreaseThreshold) {
       takePic();
       picsTaken++;
     }
 
+    // Update previous distance
+    prevDistance = distance;
+
     if (distance < 3) {
       landed();
     }
-
-
   }
 }
 
